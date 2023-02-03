@@ -99,7 +99,7 @@ const logout = async (req, res) => {
 };
 const verifyEmail = async (req, res) => {
   const { token, email } = req.query;
-  if (!verificationToken || !email) {
+  if (!token || !email) {
     throw new CustomError.BadRequestError(
       "Please provide email and Verification Token"
     );
@@ -110,7 +110,7 @@ const verifyEmail = async (req, res) => {
       "User with following email does not exists"
     );
   }
-  const match = user.verificationToken === verificationToken;
+  const match = user.verificationToken === token;
   if (!match) {
     throw new CustomError.UnauthenticatedError("Verification Failed!!");
   }
