@@ -98,7 +98,7 @@ const logout = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: "user logged out!" });
 };
 const verifyEmail = async (req, res) => {
-  const { verificationToken, email } = req.body;
+  const { verificationToken, email } = req.query;
   if (!verificationToken || !email) {
     throw new CustomError.BadRequestError(
       "Please provide email and Verification Token"
