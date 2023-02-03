@@ -6,6 +6,7 @@ const {
   attachCookiesToResponse,
   checkPermission,
 } = require("../utils");
+const Token = require("../models/Token");
 
 const getAllUsers = async (req, res) => {
   const users = await User.find({ role: "user" }).select("-password");
@@ -40,7 +41,15 @@ const updateUser = async (req, res) => {
     }
   );
   const payload = createTokenUser(user);
-  attachCookiesToResponse(res, { payload });
+  const existingToken = await Token.findOne({ user: payload.user_id });
+
+  let refreshToken = crypto.randomBytes(40).toString("hex");
+  const userAgent = req.headers["user-agent"];
+  const ip = req.ip;
+  const userToken = { refreshToken, ip, userAgent, user: payload._id };
+
+  await Token.findOneAndUpdate({ _id: existingToken._id }, { userToken });
+  attachCookiesToResponse({ res, user: payload, refreshToken });
   res.status(StatusCodes.OK).json({ user: payload });
 };
 
