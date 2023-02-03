@@ -25,13 +25,30 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["user", "admin"],
-    default: "user",
+    enum: ["student", "admin", "manager", "teacher"],
+    default: "student",
   },
+  branch: {
+    type: String,
+    enum: ["IT", "EC", "EE", "CE", "ME"],
+    required: true,
+  },
+  yearOfAdmission: {
+    type: Number,
+    required:true,
+  },
+  verificationToken: String,
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verified: Date,
+  passwordToken: { type: String },
+  passwordTokenExpirationDate: { type: Date },
 });
 
 UserSchema.pre("save", async function () {
-  // if (!this.isModified("passsword")) return;
+  if (!this.isModified("password")) return;
   const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
 });
