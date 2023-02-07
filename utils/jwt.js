@@ -7,19 +7,20 @@ const createJWT = ({ payload }) => {
 
 const isTokenValid = (token) => jwt.verify(token, process.env.JWT_SECRET);
 
-const attachSingleCookieToResponse = ({ res, user }) => {
+const attachCookieToResponse = ({ res, user }) => {
   const token = createJWT({ payload: user });
 
-  const oneDay = 1000 * 60 * 60 * 24;
+  const thirtyDays = 1000 * 60 * 60 * 24 * 30;
 
   res.cookie("token", token, {
     httpOnly: true,
-    expires: new Date(Date.now() + oneDay),
+    expires: new Date(Date.now() + thirtyDays),
     secure: process.env.NODE_ENV === "production",
     signed: true,
   });
 };
-const attachCookiesToResponse = ({ res, user, refreshToken }) => {
+
+const attachTwoCookiesToResponse = ({ res, user, refreshToken }) => {
   const accessTokenJWT = createJWT({ payload: { user } });
   const refreshTokenJWT = createJWT({ payload: { user, refreshToken } });
 
@@ -44,5 +45,5 @@ const attachCookiesToResponse = ({ res, user, refreshToken }) => {
 module.exports = {
   createJWT,
   isTokenValid,
-  attachCookiesToResponse,
+  attachCookieToResponse,
 };

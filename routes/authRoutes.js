@@ -8,11 +8,21 @@ const {
   verifyEmail,
   forgotPassword,
   resetPassword,
+  registerForAdmin,
 } = require("../controllers/authController");
 
-const { authenticationHandler } = require("../middleware/authentication");
+const {
+  authenticationHandler,
+  authorizeUser,
+} = require("../middleware/authentication");
 
 router.post("/register", register);
+router.post(
+  "/registerAdmin",
+  authenticationHandler,
+  authorizeUser("admin"),
+  registerForAdmin
+);
 router.delete("/logout", authenticationHandler, logout);
 router.post("/login", login);
 router.post("/verify-email", verifyEmail);

@@ -3,13 +3,22 @@ const { StatusCodes } = require("http-status-codes");
 const CustomAPIError = require("../errors");
 const {
   createTokenUser,
-  attachCookiesToResponse,
-  checkPermission,
+  attachCookieToResponse,
+  checkPermissions,
 } = require("../utils");
-const Token = require("../models/Token");
 
 const getAllUsers = async (req, res) => {
-  const users = await User.find({ role: "user" }).select("-password");
+  const users = await User.find({}).select("-password");
+  res.status(StatusCodes.OK).json({ users });
+};
+
+const getAllStudents = async (req, res) => {
+  const users = await User.find({ role: "student" }).select("-password");
+  res.status(StatusCodes.OK).json({ users });
+};
+
+const getAllTeachers = async (req, res) => {
+  const users = await User.find({ role: "teacher" }).select("-password");
   res.status(StatusCodes.OK).json({ users });
 };
 
@@ -19,7 +28,7 @@ const getSingleUser = async (req, res) => {
   if (!user) {
     throw new CustomAPIError.NotFoundError(`Given id: ${id} doesn't exist`);
   }
-  checkPermission(req.user, user._id);
+  checkPermissions(req.user, user._id);
   res.status(StatusCodes.OK).json({ user });
 };
 
@@ -41,15 +50,8 @@ const updateUser = async (req, res) => {
     }
   );
   const payload = createTokenUser(user);
-  const existingToken = await Token.findOne({ user: payload.user_id });
 
-  let refreshToken = crypto.randomBytes(40).toString("hex");
-  const userAgent = req.headers["user-agent"];
-  const ip = req.ip;
-  const userToken = { refreshToken, ip, userAgent, user: payload._id };
-
-  await Token.findOneAndUpdate({ _id: existingToken._id }, { userToken });
-  attachCookiesToResponse({ res, user: payload, refreshToken });
+  attachCookieToResponse({ res, user: payload });
   res.status(StatusCodes.OK).json({ user: payload });
 };
 
@@ -78,4 +80,6 @@ module.exports = {
   showCurrentUser,
   updateUser,
   updateUserPassword,
+  getAllStudents,
+  getAllTeachers
 };

@@ -35,8 +35,14 @@ const UserSchema = new mongoose.Schema({
   },
   yearOfAdmission: {
     type: Number,
-    required:true,
+    required: true,
   },
+  subjects: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Batch",
+    },
+  ],
   verificationToken: String,
   isVerified: {
     type: Boolean,

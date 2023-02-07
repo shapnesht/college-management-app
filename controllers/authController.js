@@ -1,13 +1,12 @@
 const User = require("../models/User");
-const Token = require("../models/Token");
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
 const {
-  attachCookiesToResponse,
   createTokenUser,
   sendVerficationEmail,
   sendResetPasswordEmail,
   createHash,
+  attachCookieToResponse,
 } = require("../utils");
 const crypto = require("crypto");
 
@@ -16,7 +15,14 @@ const register = async (req, res) => {
 
   const emailAlreadyExists = await User.findOne({ email });
   if (emailAlreadyExists) {
-    throw new CustomError.BadRequestError("Email already exists");
+    if (emailAlreadyExists.isVerified) {
+      throw new CustomError.BadRequestError(
+        "Email already exists!!, Please Login"
+      );
+    }
+    throw new CustomError.BadRequestError(
+      "Email not verified Please check your email!!"
+    );
   }
 
   // first registered user is an admin
@@ -34,12 +40,78 @@ const register = async (req, res) => {
     branch,
     yearOfAdmission,
   });
-  sendVerficationEmail({ name, email, verificationToken, origin:process.env.HOSTED_URL });
+  sendVerficationEmail({
+    name,
+    email,
+    verificationToken,
+    origin: process.env.HOSTED_URL,
+  });
   res.status(StatusCodes.CREATED).json({
     msg: "Success!! Please verify your email",
   });
 };
+
+const registerForAdmin = async (req, res) => {
+  const { email, name, password, branch, yearOfAdmission, role } = req.body;
+
+  const emailAlreadyExists = await User.findOne({ email });
+  if (emailAlreadyExists) {
+    if (emailAlreadyExists.isVerified) {
+      throw new CustomError.BadRequestError(
+        "Email already exists!!, Please Login"
+      );
+    }
+    throw new CustomError.BadRequestError(
+      "Email not verified Please check your email!!"
+    );
+  }
+
+  const verificationToken = crypto.randomBytes(40).toString("hex");
+  const user = await User.create({
+    name,
+    email,
+    password,
+    role,
+    verificationToken,
+    branch,
+    yearOfAdmission,
+  });
+  sendVerficationEmail({
+    name,
+    email,
+    verificationToken,
+    origin: process.env.HOSTED_URL,
+  });
+  res.status(StatusCodes.CREATED).json({
+    msg: "Success!! Please verify your email and use forgot password to set a new password",
+  });
+};
+
 const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new CustomError.BadRequestError("Please provide email and password");
+  }
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new CustomError.UnauthenticatedError("Invalid Credentials");
+  }
+  const isPasswordCorrect = await user.comparePasswords(password);
+  if (!isPasswordCorrect) {
+    throw new CustomError.UnauthenticatedError("Invalid Credentials");
+  }
+  if (!user.isVerified) {
+    throw new CustomError.UnauthenticatedError("Please verify your email");
+  }
+  const tokenUser = createTokenUser(user);
+
+  attachCookieToResponse({ res, user: tokenUser });
+  res.status(StatusCodes.OK).json({ user: tokenUser });
+};
+
+const loginWithTwoCookies = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -84,21 +156,17 @@ const login = async (req, res) => {
   attachCookiesToResponse({ res, user: tokenUser, refreshToken });
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };
+
 const logout = async (req, res) => {
-  console.log(req.user);
-  await Token.findOneAndRemove({ user: req.user.userId });
-  res.cookie("refreshToken", "logout", {
-    httpOnly: true,
-    expires: new Date(Date.now()),
-  });
-  res.cookie("accessToken", "logout", {
+  res.cookie("token", "logout", {
     httpOnly: true,
     expires: new Date(Date.now()),
   });
   res.status(StatusCodes.OK).json({ msg: "user logged out!" });
 };
+
 const verifyEmail = async (req, res) => {
-  const { token, email } = req.query;
+  const { token, email } = req.body;
   if (!token || !email) {
     throw new CustomError.BadRequestError(
       "Please provide email and Verification Token"
@@ -118,7 +186,11 @@ const verifyEmail = async (req, res) => {
   user.verified = Date.now();
   user.verificationToken = "";
   await user.save();
-  res.status(StatusCodes.OK).json({ msg: "Successfully verified email" });
+  res
+    .status(StatusCodes.OK)
+    .json({
+      msg: "Successfully verified email, Use forgot password to set a new password",
+    });
 };
 
 const forgotPassword = async (req, res) => {
@@ -136,7 +208,7 @@ const forgotPassword = async (req, res) => {
       email: user.email,
       passwordToken,
       name: user.name,
-      origin:process.env.HOSTED_URL,
+      origin: process.env.HOSTED_URL,
     });
 
     user.passwordToken = createHash(passwordToken);
@@ -180,4 +252,5 @@ module.exports = {
   verifyEmail,
   forgotPassword,
   resetPassword,
+  registerForAdmin,
 };
