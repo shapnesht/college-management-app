@@ -12,16 +12,6 @@ const getAllUsers = async (req, res) => {
   res.status(StatusCodes.OK).json({ users });
 };
 
-const getAllStudents = async (req, res) => {
-  const users = await User.find({ role: "student" }).select("-password");
-  res.status(StatusCodes.OK).json({ users });
-};
-
-const getAllTeachers = async (req, res) => {
-  const users = await User.find({ role: "teacher" }).select("-password");
-  res.status(StatusCodes.OK).json({ users });
-};
-
 const getSingleUser = async (req, res) => {
   const { id } = req.params;
   const user = await User.findOne({ _id: id }).select("-password");
@@ -79,7 +69,5 @@ module.exports = {
   getSingleUser,
   showCurrentUser,
   updateUser,
-  updateUserPassword,
-  getAllStudents,
-  getAllTeachers
+  updateUserPassword
 };

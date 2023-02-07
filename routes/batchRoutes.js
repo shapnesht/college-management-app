@@ -5,7 +5,6 @@ const {
   deleteBatch,
   getBatch,
   getAllBatches,
-  updateStudentsOfBatch,
 } = require("../controllers/batchController");
 
 // authentication Handler
@@ -18,14 +17,6 @@ router
   .route("/")
   .post(authenticationHandler, authorizeUser("teacher", "admin"), createBatch)
   .get(authenticationHandler, getAllBatches);
-
-router
-  .route("/students/:id")
-  .patch(
-    authenticationHandler,
-    authorizeUser("teacher", "admin"),
-    updateStudentsOfBatch
-  );
 
 router
   .route("/:id")

@@ -20,6 +20,8 @@ const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const batchRoutes = require("./routes/batchRoutes");
+const studentRoutes = require("./routes/studentRoutes");
+const teacherRoutes = require("./routes/teacherRoutes");
 
 app.use(morgan("tiny"));
 app.use(express.json());
@@ -28,6 +30,8 @@ app.use(cookieParser(process.env.JWT_SECRET));
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/batch", batchRoutes);
+app.use("/api/v1/student", studentRoutes);
+app.use("/api/v1/teacher", teacherRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
