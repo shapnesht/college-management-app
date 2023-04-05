@@ -26,7 +26,7 @@ const teacherRoutes = require("./routes/teacherRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 
 app.use(cookieParser(process.env.JWT_SECRET));
-app.use(cors({credentials: true, origin:'https://college-management-app.onrender.com'}));
+app.use(cors({credentials: true, origin:'http://localhost:4200'}));
 app.use(morgan("tiny"));
 app.use(express.json());
 
