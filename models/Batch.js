@@ -26,6 +26,12 @@ const BatchSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    attendance: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Attendance",
+      },
+    ],
     noOfStudents: {
       type: Number,
       default: 0,

@@ -49,6 +49,12 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    attendances: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Attendance",
+      },
+    ],
     verified: Date,
     passwordToken: { type: String },
     passwordTokenExpirationDate: { type: Date },

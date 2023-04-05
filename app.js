@@ -14,6 +14,7 @@ const errorHandler = require("./middleware/error-handler");
 
 // other packages
 const morgan = require("morgan");
+const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 // router
@@ -22,16 +23,19 @@ const userRoutes = require("./routes/userRoutes");
 const batchRoutes = require("./routes/batchRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 const teacherRoutes = require("./routes/teacherRoutes");
+const attendanceRoutes = require("./routes/attendanceRoutes");
 
+app.use(cookieParser(process.env.JWT_SECRET));
+app.use(cors({credentials: true, origin:'https://college-management-app.onrender.com'}));
 app.use(morgan("tiny"));
 app.use(express.json());
-app.use(cookieParser(process.env.JWT_SECRET));
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/batch", batchRoutes);
 app.use("/api/v1/student", studentRoutes);
 app.use("/api/v1/teacher", teacherRoutes);
+app.use("/api/v1/attendance", attendanceRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

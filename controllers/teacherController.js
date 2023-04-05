@@ -8,10 +8,10 @@ const getAllTeachers = async (req, res) => {
 };
 
 const getAllBatchesOfTeacher = async (req, res) => {
-  const batches = await Batch.find({ _id: req.user.userId }).select(
-    "-students"
+  const batches = await Batch.find({ teacher: req.user.userId }).select(
+    "subject noOfStudents"
   );
-  res.status(StatusCodes.OK).json({ teachers });
+  res.status(StatusCodes.OK).json({ batches });
 };
 
 module.exports = {

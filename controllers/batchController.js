@@ -2,7 +2,7 @@ const CustomAPIError = require("../errors");
 const { StatusCodes } = require("http-status-codes");
 const Batch = require("../models/Batch");
 const User = require("../models/User");
-const { checkPermissions } = require("../utils");
+const { checkPermissions, difference } = require("../utils");
 
 const createBatch = async (req, res) => {
   let { year, branch, subject, students } = req.body;
@@ -98,28 +98,12 @@ const updateStudentsOfBatch = async (req, res) => {
     { students: newStudents, noOfStudents: newStudents.length },
     { runValidators: true, new: true }
   );
-  console.log(oldStudents);
-  console.log(newStudents);
   const added = difference(newStudents, oldStudents);
   const removed = difference(oldStudents, newStudents);
   await User.updateMany({ _id: added }, { $addToSet: { subjects: id } });
   await User.updateMany({ _id: removed }, { $pull: { subjects: id } });
   res.status(StatusCodes.OK).json({ batch });
 };
-
-function difference(A, B) {
-  const arrA = Array.isArray(A) ? A.map((x) => x.toString()) : [A.toString()];
-  const arrB = Array.isArray(B) ? B.map((x) => x.toString()) : [B.toString()];
-
-  const result = [];
-  for (const p of arrA) {
-    if (arrB.indexOf(p) === -1) {
-      result.push(p);
-    }
-  }
-
-  return result;
-}
 
 const deleteBatch = async (req, res) => {
   const { id } = req.params;

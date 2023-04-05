@@ -108,12 +108,14 @@ const login = async (req, res) => {
   const tokenUser = createTokenUser(user);
 
   attachCookieToResponse({ res, user: tokenUser });
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };
 
 const loginWithTwoCookies = async (req, res) => {
   const { email, password } = req.body;
-
+  
   if (!email || !password) {
     throw new CustomError.BadRequestError("Please provide email and password");
   }
