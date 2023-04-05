@@ -26,7 +26,13 @@ const teacherRoutes = require("./routes/teacherRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 
 app.use(cookieParser(process.env.JWT_SECRET));
-app.use(cors({credentials: true, origin:'https://igec.netlify.app'}));
+app.use(
+  cors({
+    credentials: true,
+    origin: "https://igec.netlify.app",
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(morgan("tiny"));
 app.use(express.json());
 
