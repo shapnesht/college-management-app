@@ -23,13 +23,13 @@ router
   )
   .get(
     authenticationHandler,
-    authorizeUser("admin"),
+    authorizeUser("admin", "teacher"),
     getAttendance
   );
 
 router
   .route("/getAttendanceByDateAndTime")
-  .get(
+  .post(
     authenticationHandler,
     authorizeUser("admin", "teacher"),
     getAttendanceByDateAndTime
@@ -37,7 +37,7 @@ router
 
 router
   .route("/getAttendanceByDate")
-  .get(
+  .post(
     authenticationHandler,
     authorizeUser("admin", "teacher"),
     getAllAttendanceByDate
@@ -50,7 +50,7 @@ router
     authorizeUser("admin", "teacher"),
     updateAttendance
   )
-  .get(authenticationHandler, authorizeUser("admin", "teacher"), getAttendance)
+  .post(authenticationHandler, authorizeUser("admin", "teacher"), getAttendance)
   .delete(
     authenticationHandler,
     authorizeUser("admin", "teacher"),
