@@ -24,12 +24,14 @@ const batchRoutes = require('./routes/batchRoutes')
 const studentRoutes = require('./routes/studentRoutes')
 const teacherRoutes = require('./routes/teacherRoutes')
 const attendanceRoutes = require('./routes/attendanceRoutes')
+const booksRoutes = require('./routes/bookRoutes')
+const borrowBookRoutes = require('./routes/borrowBooksRoutes')
 
 app.use(cookieParser(process.env.JWT_SECRET))
 app.use(
   cors({
     credentials: true,
-    origin: 'https://igec.netlify.app',
+    origin: 'http://localhost:8080/',
   })
 )
 app.use(morgan('tiny'))
@@ -41,6 +43,8 @@ app.use('/api/v1/batch', batchRoutes)
 app.use('/api/v1/student', studentRoutes)
 app.use('/api/v1/teacher', teacherRoutes)
 app.use('/api/v1/attendance', attendanceRoutes)
+app.use('/api/v1/books', booksRoutes)
+app.use('/api/v1/borrow', borrowBookRoutes)
 
 app.use(notFound)
 app.use(errorHandler)

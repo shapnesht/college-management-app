@@ -3,7 +3,7 @@ const { StatusCodes } = require("http-status-codes");
 const Batch = require("../models/Batch");
 const User = require("../models/User");
 const { checkPermissions, difference } = require("../utils");
-
+// Create Btach
 const createBatch = async (req, res) => {
   let { year, branch, subject, students } = req.body;
   if (!branch || !subject) {
@@ -52,6 +52,8 @@ const createBatch = async (req, res) => {
   res.status(StatusCodes.ACCEPTED).json({ batch });
 };
 
+
+// Update Batch
 const updateBatch = async (req, res) => {
   const { year, branch, subject } = req.body;
   const { id } = req.params;
@@ -105,6 +107,7 @@ const updateStudentsOfBatch = async (req, res) => {
   res.status(StatusCodes.OK).json({ batch });
 };
 
+// Delete Batch
 const deleteBatch = async (req, res) => {
   const { id } = req.params;
   const batch = await Batch.findOne({ _id: id });
@@ -125,6 +128,7 @@ const deleteBatch = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: `Successfully deleted the batch` });
 };
 
+// Get Batch
 const getBatch = async (req, res) => {
   const { id } = req.params;
   const batch = await Batch.findOne({ _id: id, teacher: req.user.userId });
