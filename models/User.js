@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["student", "admin", "manager", "teacher"],
+      enum: ["student", "admin", "manager", "teacher", "librarian"],
       default: "student",
     },
     branch: {
@@ -53,6 +53,12 @@ const UserSchema = new mongoose.Schema(
       {
         type: mongoose.Types.ObjectId,
         ref: "Attendance",
+      },
+    ],
+    books: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Borrow",
       },
     ],
     verified: Date,
