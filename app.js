@@ -31,6 +31,7 @@ app.use(cookieParser(process.env.JWT_SECRET))
 app.use(
   cors({
     credentials: true,
+    // origin: 'https://igec.netlify.app',
     origin: 'http://localhost:8080/',
   })
 )

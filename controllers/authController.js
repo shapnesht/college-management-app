@@ -108,7 +108,8 @@ const login = async (req, res) => {
   const tokenUser = createTokenUser(user)
 
   attachCookieToResponse({ res, user: tokenUser })
-  res.header('Access-Control-Allow-Origin', 'https://igec.netlify.app')
+  // res.header('Access-Control-Allow-Origin', 'https://igec.netlify.app')
+  res.header('Access-Control-Allow-Origin', 'http://localhost:8080/')
   res.header(
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept'
