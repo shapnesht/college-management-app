@@ -32,7 +32,7 @@ app.use(
   cors({
     credentials: true,
     // origin: 'https://igec.netlify.app',
-    origin: 'http://localhost:8080/',
+    origin: 'http://localhost:4200',
   })
 )
 app.use(morgan('tiny'))
